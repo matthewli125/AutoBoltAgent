@@ -1,0 +1,15 @@
+name: autobolt
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - fenics  # ⚠️ FEniCS (classic version) works ONLY on Linux and WSL — not native Windows
+  - meshio  # Used for mesh I/O (convert .msh <-> .xdmf/.xml)
+  - gmsh
+  - numpy
+  - scipy
+  - matplotlib
+  - pip
+  - pip:
+      - build123d
+      - pyyaml
