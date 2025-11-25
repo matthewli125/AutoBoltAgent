@@ -11,14 +11,8 @@ requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name="Sriya"}, {name="Chris McComb", email="ccmcc2012@gmail.com"}]
 dependencies = [
-    "fenics",
-    "meshio",
-    "numpy",
-    "scipy",
-    "matplotlib",
-    "gmsh",
-    "build123d",
-    "pyyaml",
+    "autobolt@https://github.com/sriyanc2001/AutoBolt",
+    "smolagents",
 ]
 [project.optional-dependencies]
 test = [
