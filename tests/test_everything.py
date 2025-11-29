@@ -4,12 +4,24 @@ import autoboltagent
 import autoboltagent.prompts
 
 
+def is_macos() -> bool:
+    import platform
+
+    return platform.system() == "Darwin"
+
+
 def get_testing_model() -> smolagents.Model:
-    # Use the smallest Instruct model available for fast CI feedback
-    return smolagents.TransformersModel(
-        model_id="HuggingFaceTB/SmolLM-135M-Instruct",
-        max_new_tokens=200,  # Keep generation short for speed
-    )
+    if is_macos():
+        # Use a local model on macOS for faster testing
+        return smolagents.MLXModel(
+            model_id="Qwen/Qwen3-1.7B-MLX-4bit",
+        )
+    else:
+        # Use the smallest Instruct model available for fast CI feedback
+        return smolagents.TransformersModel(
+            model_id="HuggingFaceTB/SmolLM-135M-Instruct",
+            max_new_tokens=200,  # Keep generation short for speed
+        )
 
 
 def test_guessing_agent():
