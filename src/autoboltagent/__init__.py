@@ -1,1 +1,6 @@
-from agents import LowFidelityAgent, HighFidelityAgent, DualFidelityAgent, GuessingAgent
+from .agents import (
+    LowFidelityAgent,
+    HighFidelityAgent,
+    DualFidelityAgent,
+    GuessingAgent,
+)
