@@ -1,6 +1,5 @@
 import smolagents
-from .low_fidelity_tool import AnalyticalTool
-from .high_fidelity_tool import FiniteElementTool
+from .tools import AnalyticalTool, FiniteElementTool
 from .prompts import (
     TOOL_USING_INSTRUCTION,
     BASE_INSTRUCTIONS,
@@ -24,10 +23,10 @@ class GuessingAgent(smolagents.ToolCallingAgent):
         Args:
             model: An instance of smolagents.Model to be used by the agent.
         """
-        tools = []
         super().__init__(
             name="GuessingAgent",
-            tools=tools,
+            tools=[],
+            add_base_tools=False,
             model=model,
             instructions=BASE_INSTRUCTIONS,
         )
@@ -48,10 +47,10 @@ class LowFidelityAgent(smolagents.ToolCallingAgent):
         Args:
             model: An instance of smolagents.Model to be used by the agent.
         """
-        tools = [AnalyticalTool()]
         super().__init__(
             name="LowFidelityAgent",
-            tools=tools,
+            tools=[AnalyticalTool()],
+            add_base_tools=False,
             model=model,
             instructions=BASE_INSTRUCTIONS + TOOL_USING_INSTRUCTION,
         )
@@ -72,10 +71,10 @@ class HighFidelityAgent(smolagents.ToolCallingAgent):
         Args:
             model: An instance of smolagents.Model to be used by the agent.
         """
-        tools = [FiniteElementTool()]
         super().__init__(
             name="HighFidelityAgent",
-            tools=tools,
+            tools=[FiniteElementTool()],
+            add_base_tools=False,
             model=model,
             instructions=BASE_INSTRUCTIONS + TOOL_USING_INSTRUCTION,
         )
@@ -96,10 +95,10 @@ class DualFidelityAgent(smolagents.ToolCallingAgent):
         Args:
             model: An instance of smolagents.Model to be used by the agent.
         """
-        tools = [AnalyticalTool(), FiniteElementTool()]
         super().__init__(
             name="DualFidelityAgent",
-            tools=tools,
+            tools=[AnalyticalTool(), FiniteElementTool()],
+            add_base_tools=False,
             model=model,
             instructions=BASE_INSTRUCTIONS
             + TOOL_USING_INSTRUCTION
