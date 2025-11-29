@@ -12,7 +12,7 @@ license = {text = "MIT"}
 authors = [{name="Sriya"}, {name="Chris McComb", email="ccmcc2012@gmail.com"}]
 dependencies = [
     "autobolt @ git+https://github.com/sriyanc2001/AutoBolt.git",
-    "smolagents",
+    "smolagents[transformers]",
     "pandas",
     "numpy",
 ]

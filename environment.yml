@@ -13,7 +13,7 @@ dependencies:
   - pip:
       - build123d
       - pyyaml
-      - smolagents
+      - smolagents[transformers]
       - pandas
       - "autobolt @ git+https://github.com/sriyanc2001/AutoBolt.git"
       - black
