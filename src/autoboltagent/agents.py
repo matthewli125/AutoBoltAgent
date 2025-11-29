@@ -14,7 +14,6 @@ class GuessingAgent(smolagents.ToolCallingAgent):
 
     This agent operates solely based on its internal model and does not utilize any external tools for analysis or calculations.
     It is designed to provide initial estimates or solutions based on its knowledge and reasoning capabilities.
-
     """
 
     def __init__(self, model: smolagents.Model):
