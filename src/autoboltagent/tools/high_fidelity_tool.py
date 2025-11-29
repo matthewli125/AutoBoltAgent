@@ -38,13 +38,13 @@ class FiniteElementTool(smolagents.Tool):
         plate_width = 0.1  # [m]
         plate_length = 0.2  # [m]
 
-        sf = autobolt.calculate_fos(
-            plate_thickness_m=plate_thickness,
+        fos = autobolt.calculate_fos(
+            plate_thickness_m=plate_thickness / 1000,
             num_holes=num_bolts,
-            elastic_modulus=plate_elastic_modulus,
-            yield_strength=plate_yield_strength,
-            traction_values=[(0, -load, 0)],
-            hole_radius_m=bolt_diameter / 2,
+            elastic_modulus=plate_elastic_modulus * 10**9,
+            yield_strength=plate_yield_strength * 10**6,
+            traction_values=[(0, -load / (plate_length * plate_thickness), 0)],
+            hole_radius_m=bolt_diameter / 2 / 1000,
             plate_length_m=plate_length,
             plate_width_m=plate_width,
             edge_margin_m=plate_length / (2 * num_bolts),
@@ -54,11 +54,11 @@ class FiniteElementTool(smolagents.Tool):
             poissons_ratio=0.3,  # Poisson's ratio for steel
         )
 
-        if sf > desired_safety_factor + 0.1:
+        if fos > desired_safety_factor + 0.1:
             comparison = "higher than desired"
-        elif sf < desired_safety_factor - 0.1:
+        elif fos < desired_safety_factor - 0.1:
             comparison = "lower than desired"
         else:
             comparison = "within acceptable range"
 
-        return f"The factor of safety for the assembly is {sf:.2f} ({comparison})."
+        return f"The factor of safety for the assembly is {fos:.2f} ({comparison})."
