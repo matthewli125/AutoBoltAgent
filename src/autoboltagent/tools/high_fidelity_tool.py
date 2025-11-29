@@ -38,12 +38,15 @@ class FiniteElementTool(smolagents.Tool):
         plate_width = 0.1  # [m]
         plate_length = 0.2  # [m]
 
+        # Compute traction
+        traction = -load / (plate_thickness / 1000 * plate_length)
+
         fos = autobolt.calculate_fos(
             plate_thickness_m=plate_thickness / 1000,
             num_holes=num_bolts,
             elastic_modulus=plate_elastic_modulus * 10**9,
             yield_strength=plate_yield_strength * 10**6,
-            traction_values=[(0, -load / (plate_length * plate_thickness), 0)],
+            traction_values=[(0, traction, 0)],
             hole_radius_m=bolt_diameter / 2 / 1000,
             plate_length_m=plate_length,
             plate_width_m=plate_width,

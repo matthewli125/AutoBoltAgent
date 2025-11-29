@@ -7,16 +7,17 @@ def test_analytical_tool():
     result = tool.forward(
         desired_safety_factor=3.0,
         load=60000,
-        preload=150000,
+        preload=0,
         num_bolts=4,
         bolt_diameter=20,
-        bolt_yield_strength=940,
         bolt_elastic_modulus=210,
-        plate_thickness=10,
         plate_elastic_modulus=210,
+        bolt_yield_strength=250,
         plate_yield_strength=250,
+        plate_thickness=30,
         pitch=1.5,
     )
+    print(result)
 
     assert isinstance(result, str)
     assert (
@@ -32,16 +33,18 @@ def test_fea_tool():
     result = tool.forward(
         desired_safety_factor=3.0,
         load=60000,
-        preload=150000,
+        preload=0,
         num_bolts=4,
         bolt_diameter=20,
-        bolt_yield_strength=940,
         bolt_elastic_modulus=210,
-        plate_thickness=15,
         plate_elastic_modulus=210,
+        bolt_yield_strength=250,
         plate_yield_strength=250,
+        plate_thickness=30,
         pitch=1.5,
     )
+
+    print(result)
 
     assert isinstance(result, str)
     assert (
