@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -11,7 +11,7 @@ requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name="Sriya"}, {name="Chris McComb", email="ccmcc2012@gmail.com"}]
 dependencies = [
-    "git+https://github.com/sriyanc2001/AutoBolt",
+    "autobolt @ git+https://github.com/sriyanc2001/AutoBolt.git",
     "smolagents",
     "pandas",
     "numpy",

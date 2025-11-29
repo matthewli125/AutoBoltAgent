@@ -15,5 +15,5 @@ dependencies:
       - pyyaml
       - smolagents
       - pandas
-      - autobolt@https://github.com/sriyanc2001/AutoBolt
+      - "autobolt @ git+https://github.com/sriyanc2001/AutoBolt.git"
       - black
