@@ -1,12 +1,12 @@
 import math
-import pandas as pd
-import numpy as np
+import pandas
+import numpy
 
 
 # Parameters for the Cornwell equation for joints with two plates of the same material as described by Norton for
 # equation 15.19 and presented in table 15-8
-CORNWELL_PARAMS = pd.DataFrame(
-    np.array(
+CORNWELL_PARAMS = pandas.DataFrame(
+    numpy.array(
         [
             [0.1, 0.4389, -0.9197, 0.8901, -0.3187],
             [0.2, 0.6118, -1.1715, 1.0875, -0.3806],
