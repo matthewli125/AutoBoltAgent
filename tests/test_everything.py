@@ -4,16 +4,18 @@ import autoboltagent
 import autoboltagent.prompts
 
 
-def test_guessing_agent():
-
+def get_testing_model() -> smolagents.Model:
     # Use the smallest Instruct model available for fast CI feedback
-    model = smolagents.TransformersModel(
+    return smolagents.TransformersModel(
         model_id="HuggingFaceTB/SmolLM-135M-Instruct",
         max_new_tokens=200,  # Keep generation short for speed
     )
 
+
+def test_guessing_agent():
+
     # Create the GuessingAgent and run it
-    response = autoboltagent.GuessingAgent(model).run(
+    response = autoboltagent.GuessingAgent(get_testing_model()).run(
         autoboltagent.prompts.EXAMPLE_TASK_INSTRUCTIONS
     )
 
@@ -23,14 +25,8 @@ def test_guessing_agent():
 
 def test_low_fidelity_agent():
 
-    # Use the smallest Instruct model available for fast CI feedback
-    model = smolagents.TransformersModel(
-        model_id="HuggingFaceTB/SmolLM-135M-Instruct",
-        max_new_tokens=200,  # Keep generation short for speed
-    )
-
     # Create the LowFidelityAgent and run it
-    response = autoboltagent.LowFidelityAgent(model).run(
+    response = autoboltagent.LowFidelityAgent(get_testing_model()).run(
         autoboltagent.prompts.EXAMPLE_TASK_INSTRUCTIONS
     )
 
@@ -40,14 +36,8 @@ def test_low_fidelity_agent():
 
 def test_high_fidelity_agent():
 
-    # Use the smallest Instruct model available for fast CI feedback
-    model = smolagents.TransformersModel(
-        model_id="HuggingFaceTB/SmolLM-135M-Instruct",
-        max_new_tokens=200,  # Keep generation short for speed
-    )
-
     # Create the HighFidelityAgent and run it
-    response = autoboltagent.HighFidelityAgent(model).run(
+    response = autoboltagent.HighFidelityAgent(get_testing_model()).run(
         autoboltagent.prompts.EXAMPLE_TASK_INSTRUCTIONS
     )
 
@@ -57,14 +47,8 @@ def test_high_fidelity_agent():
 
 def test_dual_fidelity_agent():
 
-    # Use the smallest Instruct model available for fast CI feedback
-    model = smolagents.TransformersModel(
-        model_id="HuggingFaceTB/SmolLM-135M-Instruct",
-        max_new_tokens=200,  # Keep generation short for speed
-    )
-
     # Create the DualFidelityAgent and run it
-    response = autoboltagent.DualFidelityAgent(model).run(
+    response = autoboltagent.DualFidelityAgent(get_testing_model()).run(
         autoboltagent.prompts.EXAMPLE_TASK_INSTRUCTIONS
     )
 

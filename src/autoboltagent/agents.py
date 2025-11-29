@@ -16,7 +16,7 @@ class GuessingAgent(smolagents.ToolCallingAgent):
     It is designed to provide initial estimates or solutions based on its knowledge and reasoning capabilities.
     """
 
-    def __init__(self, model: smolagents.Model):
+    def __init__(self, model: smolagents.Model) -> None:
         """
         Initializes a GuessingAgent that does not use any tools.
 
@@ -40,7 +40,7 @@ class LowFidelityAgent(smolagents.ToolCallingAgent):
     It is designed to provide solutions based on simplified models and assumptions, making it suitable for quick estimates and preliminary designs.
     """
 
-    def __init__(self, model: smolagents.Model):
+    def __init__(self, model: smolagents.Model) -> None:
         """
         Initializes a LowFidelityAgent that uses an analytical tool.
 
@@ -64,7 +64,7 @@ class HighFidelityAgent(smolagents.ToolCallingAgent):
     It is designed to provide accurate and reliable solutions based on comprehensive models, making it suitable for
     """
 
-    def __init__(self, model: smolagents.Model):
+    def __init__(self, model: smolagents.Model) -> None:
         """
         Initializes a HighFidelityAgent that uses a finite element tool.
 
@@ -88,7 +88,7 @@ class DualFidelityAgent(smolagents.ToolCallingAgent):
     It is designed to provide solutions that balance speed and accuracy by using the low-fidelity tool
     """
 
-    def __init__(self, model: smolagents.Model):
+    def __init__(self, model: smolagents.Model) -> None:
         """
         Initializes a DualFidelityAgent that uses both analytical and finite element tools.
 

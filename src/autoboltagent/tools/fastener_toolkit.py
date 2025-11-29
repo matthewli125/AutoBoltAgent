@@ -1,4 +1,5 @@
 import math
+import typing
 
 import numpy
 import pandas
@@ -28,7 +29,11 @@ CORNWELL_PARAMS = pandas.DataFrame(
 )
 
 
-def get_tensile_stress_area(d_major, pitch=None, num_threads=None):
+def get_tensile_stress_area(
+    d_major: float,
+    pitch: typing.Optional[float] = None,
+    num_threads: typing.Optional[int] = None,
+) -> float:
     """
     Returns the tensile stress area of the bolt rounded to 3 decimal places
     :param d_major: Major diameter of the bolt [mm or in]
@@ -49,7 +54,12 @@ def get_tensile_stress_area(d_major, pitch=None, num_threads=None):
     return math.pi / 4 * ((d_pitch + d_minor) / 2) ** 2
 
 
-def get_bolt_shear_area(d_major, pitch=None, num_threads=None, threaded_in_shear=True):
+def get_bolt_shear_area(
+    d_major: float,
+    pitch: typing.Optional[float] = None,
+    num_threads: typing.Optional[int] = None,
+    threaded_in_shear: bool = True,
+) -> float:
     """
     Calculates the shear area of a bolt depending on whether the shear plane is through threaded or unthreaded region.
 
@@ -96,7 +106,9 @@ def get_bolt_shear_area(d_major, pitch=None, num_threads=None, threaded_in_shear
     return area
 
 
-def get_bolt_stiffness(a_ts, a_cs, l_unthreaded, l_threaded, E_b):
+def get_bolt_stiffness(
+    a_ts: float, a_cs: float, l_unthreaded: float, l_threaded: float, E_b: float
+) -> float:
     """
 
     :param a_ts: Tensile stress area of the bolt [mm^2 or in^2]
@@ -109,7 +121,7 @@ def get_bolt_stiffness(a_ts, a_cs, l_unthreaded, l_threaded, E_b):
     return a_ts * a_cs * E_b / (a_cs * l_threaded + a_ts * l_unthreaded)
 
 
-def get_joint_constant(d_b, l, E_m, E_b):
+def get_joint_constant(d_b: float, l: float, E_m: float, E_b: float):
     """
     Determines the stiffness of clamped members based on the Cornwell method. Makes the assumption that both members
     are of an equivalent material. Reference Eq 15.19 from Norton
@@ -175,7 +187,7 @@ def get_joint_constant(d_b, l, E_m, E_b):
     return c
 
 
-def segregate_loads(c, load):
+def segregate_loads(c: float, load: float) -> typing.Tuple[float, float]:
     """
     Identifies the quantity of a load carried by the bolt and by the members
     :param c: Joint stiffness [N/mm or lbf/in]
@@ -189,7 +201,9 @@ def segregate_loads(c, load):
     return p_b, p_m
 
 
-def bolt_yield_safety_factor(c, load, preload, a_ts, b_ys):
+def bolt_yield_safety_factor(
+    c: float, load: float, preload: float, a_ts: float, b_ys: float
+) -> float:
     """
     Determines the factor of safety against yielding the bolt under statically applied tension load
     :param c: Joint constant [N/mm or lbf/in]
@@ -211,7 +225,7 @@ def bolt_yield_safety_factor(c, load, preload, a_ts, b_ys):
     return n_y
 
 
-def bound_val(val, limits):
+def bound_val(val: float, limits: typing.List[float]) -> float:
     """
     Bounds a value within limits, setting its value to the upper or lower limit if it is out of bounds
     :param val: The value to be limited
@@ -226,7 +240,7 @@ def bound_val(val, limits):
     return val
 
 
-def linterp(x1, x2, y1, y2, x3):
+def linterp(x1: float, x2: float, y1: float, y2: float, x3: float) -> float:
     """
     Linearly interpolates to determine y3 for a range of values defined by [x1,y1], [x2, y2], [x3, y3 = ?]
     return: y3

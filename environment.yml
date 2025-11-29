@@ -17,3 +17,4 @@ dependencies:
       - pandas
       - "autobolt @ git+https://github.com/sriyanc2001/AutoBolt.git"
       - black
+      - pytest
