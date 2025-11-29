@@ -1,1 +1,1 @@
-from .agents import GuessingAgent
+from agents import LowFidelityAgent
