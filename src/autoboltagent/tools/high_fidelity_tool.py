@@ -1,10 +1,11 @@
 import autobolt
 import smolagents
+from typing import Dict, Any, Union, cast
 
 from .inputs import INPUTS
 
 
-class FiniteElementTool(smolagents.Tool):
+class FiniteElementTool(smolagents.tools.Tool):
     """
     A tool that calculates the factor of safety for a bolted connection using finite element analysis.
 
@@ -15,7 +16,8 @@ class FiniteElementTool(smolagents.Tool):
     name = "fea_fos_calculation"
     description = "Calculates the factor of safety using finite element analysis."
 
-    inputs = INPUTS
+    input_type = dict[str, dict[str, Union[str, type, bool]]]
+    inputs: input_type = cast(input_type,INPUTS)
 
     output_type = "number"
 

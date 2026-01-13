@@ -7,8 +7,10 @@ from .prompts import (
 )
 from .tools import AnalyticalTool, FiniteElementTool
 
+from .tools.logger import AgentLogger
 
-class GuessingAgent(smolagents.ToolCallingAgent):
+
+class GuessingAgent(smolagents.agents.ToolCallingAgent):
     """
     An agent that makes guesses without using any tools.
 
@@ -16,7 +18,7 @@ class GuessingAgent(smolagents.ToolCallingAgent):
     It is designed to provide initial estimates or solutions based on its knowledge and reasoning capabilities.
     """
 
-    def __init__(self, model: smolagents.Model) -> None:
+    def __init__(self, model: smolagents.models.Model) -> None:
         """
         Initializes a GuessingAgent that does not use any tools.
 
@@ -33,7 +35,7 @@ class GuessingAgent(smolagents.ToolCallingAgent):
         )
 
 
-class LowFidelityAgent(smolagents.ToolCallingAgent):
+class LowFidelityAgent(smolagents.agents.ToolCallingAgent):
     """
     An agent that utilizes a low-fidelity analytical tool for bolted connection design.
 
@@ -41,24 +43,43 @@ class LowFidelityAgent(smolagents.ToolCallingAgent):
     It is designed to provide solutions based on simplified models and assumptions, making it suitable for quick estimates and preliminary designs.
     """
 
-    def __init__(self, model: smolagents.Model) -> None:
+    def __init__(self, model: smolagents.models.Model, agent_id: str, run_id: str, target_fos: float, agent_logger: AgentLogger|None = None, max_steps=20) -> None:
         """
         Initializes a LowFidelityAgent that uses an analytical tool.
 
         Args:
             model: An instance of smolagents.Model to be used by the agent.
         """
+
+        self.agent_logger = agent_logger
+        self.agent_id = agent_id
+        self.run_id = run_id
+        self.target_fos = target_fos
+
+        callbacks = [self.log] if self.agent_logger else []
+
         super().__init__(
             name="LowFidelityAgent",
             tools=[AnalyticalTool()],
             add_base_tools=False,
             model=model,
             instructions=BASE_INSTRUCTIONS + TOOL_USING_INSTRUCTION,
+            step_callbacks = callbacks,
             verbosity_level=2,
+            max_steps=max_steps
         )
 
+    def log(self, step, agent):
+        if self.agent_logger and  step.__class__.__name__ == "ActionStep":
+            self.agent_logger.log(
+                agent_id=self.agent_id, 
+                run_id=self.run_id, 
+                target_fos=self.target_fos, 
+                action_step=step
+            )
 
-class HighFidelityAgent(smolagents.ToolCallingAgent):
+
+class HighFidelityAgent(smolagents.agents.ToolCallingAgent):
     """
     An agent that utilizes a high-fidelity finite element analysis tool for bolted connection design.
 
@@ -66,7 +87,7 @@ class HighFidelityAgent(smolagents.ToolCallingAgent):
     It is designed to provide accurate and reliable solutions based on comprehensive models, making it suitable for
     """
 
-    def __init__(self, model: smolagents.Model) -> None:
+    def __init__(self, model: smolagents.models.Model) -> None:
         """
         Initializes a HighFidelityAgent that uses a finite element tool.
 
@@ -83,7 +104,7 @@ class HighFidelityAgent(smolagents.ToolCallingAgent):
         )
 
 
-class DualFidelityAgent(smolagents.ToolCallingAgent):
+class DualFidelityAgent(smolagents.agents.ToolCallingAgent):
     """
     An agent that utilizes both low-fidelity and high-fidelity tools for bolted connection design.
 
@@ -91,7 +112,7 @@ class DualFidelityAgent(smolagents.ToolCallingAgent):
     It is designed to provide solutions that balance speed and accuracy by using the low-fidelity tool
     """
 
-    def __init__(self, model: smolagents.Model) -> None:
+    def __init__(self, model: smolagents.models.Model) -> None:
         """
         Initializes a DualFidelityAgent that uses both analytical and finite element tools.
 

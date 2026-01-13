@@ -10,7 +10,7 @@ def is_macos() -> bool:
     return platform.system() == "Darwin"
 
 
-def get_testing_model() -> smolagents.Model:
+def get_testing_model() -> smolagents.models.Model:
     if is_macos():
         # Use a local model on macOS for faster testing
         return smolagents.MLXModel(
@@ -18,7 +18,7 @@ def get_testing_model() -> smolagents.Model:
         )
     else:
         # Use the smallest Instruct model available for fast CI feedback
-        return smolagents.TransformersModel(
+        return smolagents.models.TransformersModel(
             model_id="HuggingFaceTB/SmolLM-135M-Instruct",
             max_new_tokens=200,  # Keep generation short for speed
         )
@@ -38,7 +38,15 @@ def test_guessing_agent():
 def test_low_fidelity_agent():
 
     # Create the LowFidelityAgent and run it
-    response = autoboltagent.LowFidelityAgent(get_testing_model()).run(
+    agent = autoboltagent.LowFidelityAgent(
+        model=get_testing_model(), 
+        agent_id="low fidelity agent", 
+        run_id="test 1", 
+        target_fos=3.0,
+        max_steps=5
+    )
+    
+    response = agent.run(
         autoboltagent.prompts.EXAMPLE_TASK_INSTRUCTIONS
     )
 
