@@ -36,13 +36,16 @@ class AgentLogger:
         self.db_url = db_url
         self.engine = create_engine(db_url, future=True, pool_pre_ping=True)
 
-        with self.engine.connect() as conn:
-            conn.exec_driver_sql("PRAGMA journal_mode=WAL;")
-            conn.exec_driver_sql("PRAGMA synchronous=NORMAL;")
+        try:
+            with self.engine.connect() as conn:
+                conn.exec_driver_sql("PRAGMA journal_mode=WAL;")
+                conn.exec_driver_sql("PRAGMA synchronous=NORMAL;")
 
-        Base.metadata.create_all(self.engine)
+            Base.metadata.create_all(self.engine)
 
-        self.db_session = sessionmaker(bind=self.engine, expire_on_commit=False, future=True)
+            self.db_session = sessionmaker(bind=self.engine, expire_on_commit=False, future=True)
+        except Exception as e:
+            raise IOError("Failed to connect to DB, check if file in use", repr(e))
 
     def __new__(cls, db_url: str):
         if not cls._instance:
@@ -94,23 +97,30 @@ class AgentLogger:
         print(llm_message)
         print(action_step.token_usage)
 
-        with self.db_session() as session:
-            session.add(
-                Iteration(
-                    run_id=run_id,
-                    agent_id=agent_id,
-                    iteration_no=iteration_no,
-                    start_time=start_dt,
-                    end_time=end_dt,
-                    tool_call=str(tool_calls[0] if tool_calls else None),
-                    observations=observations,
-                    target_fos=target_fos,
-                    llm_output=llm_output,
-                    error_message=error.message if error else None
-                )
-            )
-            session.commit()
+        try:
 
+            with self.db_session() as session:
+                session.add(
+                    Iteration(
+                        run_id=run_id,
+                        agent_id=agent_id,
+                        iteration_no=iteration_no,
+                        start_time=start_dt,
+                        end_time=end_dt,
+                        tool_call=str(tool_calls[0] if tool_calls else None),
+                        observations=observations,
+                        target_fos=target_fos,
+                        llm_output=llm_output,
+                        error_message=error.message if (error and error.message) else None
+                    )
+                )
+                session.flush()
+                session.commit()
+
+        except Exception as e:
+            print("\n\n")
+            print(e)
+            print("\n\n")
         
 
             
