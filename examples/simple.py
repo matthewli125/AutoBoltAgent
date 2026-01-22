@@ -1,5 +1,6 @@
-import autoboltagent
 import smolagents
+
+import autoboltagent
 
 # Use a local model on macOS for faster testing
 model = smolagents.MLXModel(

@@ -8,8 +8,8 @@ version = "0.1.0"
 description = "AI agent for automatically designing bolts"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
-authors = [{name="Sriya"}, {name="Chris McComb", email="ccmcc2012@gmail.com"}]
+license = { text = "MIT" }
+authors = [{ name = "Sriya" }, { name = "Chris McComb", email = "ccmcc2012@gmail.com" }]
 dependencies = [
     "autobolt @ git+https://github.com/sriyanc2001/AutoBolt.git",
     "smolagents[transformers]",
@@ -18,7 +18,7 @@ dependencies = [
 ]
 [project.optional-dependencies]
 test = [
-  "pytest",
+    "pytest",
 ]
 
 [tool.pytest.ini_options]

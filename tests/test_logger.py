@@ -1,12 +1,21 @@
-from autoboltagent.tools.logger import AgentLogger
-from autoboltagent.tools.logger import Iteration
-from smolagents import ActionStep, Timing, ToolCall, ChatMessage, MessageRole, AgentError
+from datetime import datetime, timezone
+
+import pytest
+from smolagents import (
+    ActionStep,
+    Timing,
+    ToolCall,
+    ChatMessage,
+    MessageRole,
+)
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
-from datetime import datetime, timezone
-import pytest
+
+from autoboltagent.tools.logger import AgentLogger
+from autoboltagent.tools.logger import Iteration
 
 db_url = "sqlite:///agent_logs_test.db"
+
 
 @pytest.fixture
 def logger():
@@ -18,6 +27,7 @@ def logger():
     yield logger
     AgentLogger.reset()
 
+
 def get_log_session(db_url):
     """
     Helper function to get db session from url
@@ -25,14 +35,16 @@ def get_log_session(db_url):
     engine = create_engine(db_url)
     return Session(engine)
 
+
 def test_logger_empty_when_fresh(logger):
     """
     Test to see if the logger db is empty when fresh
     """
     with get_log_session(db_url) as session:
         iterations = session.query(Iteration).all()
-    
+
     assert len(iterations) == 0
+
 
 def test_logger_one_write_fields_persist(logger):
     """
@@ -43,23 +55,17 @@ def test_logger_one_write_fields_persist(logger):
 
     step = ActionStep(
         step_number=1,
-        timing=Timing(
-            start_time=start_time,
-            end_time=end_time
-        ),
-        observations = "observation observation",
+        timing=Timing(start_time=start_time, end_time=end_time),
+        observations="observation observation",
         tool_calls=[ToolCall(name="tool call", arguments={"asdf": 1}, id="1341fad")],
-        model_output_message=ChatMessage(role=MessageRole("assistant"), content="LLM output 1"),
-        error=None
+        model_output_message=ChatMessage(
+            role=MessageRole("assistant"), content="LLM output 1"
+        ),
+        error=None,
     )
 
-    logger.log(
-            run_id="run_1",
-            agent_id="agent_1",
-            target_fos=1,
-            action_step=step
-        )
-    
+    logger.log(run_id="run_1", agent_id="agent_1", target_fos=1, action_step=step)
+
     with get_log_session(db_url) as session:
         iteration = session.query(Iteration).one()
 
@@ -82,22 +88,18 @@ def test_logger_large_write(logger):
         end_time = datetime.now(timezone.utc).timestamp()
         step = ActionStep(
             step_number=1,
-            timing=Timing(
-                start_time=start_time,
-                end_time=end_time
+            timing=Timing(start_time=start_time, end_time=end_time),
+            observations="observation observation",
+            tool_calls=[
+                ToolCall(name="tool call", arguments={"asdf": 1}, id="1341fad")
+            ],
+            model_output_message=ChatMessage(
+                role=MessageRole("assistant"), content=f"LLM output {i}"
             ),
-            observations = "observation observation",
-            tool_calls=[ToolCall(name="tool call", arguments={"asdf": 1}, id="1341fad")],
-            model_output_message=ChatMessage(role=MessageRole("assistant"), content=f"LLM output {i}"),
-            error=None
+            error=None,
         )
-        logger.log(
-            run_id="run_1",
-            agent_id="agent_1",
-            target_fos=1,
-            action_step=step
-        )
+        logger.log(run_id="run_1", agent_id="agent_1", target_fos=1, action_step=step)
     with get_log_session(db_url) as session:
         iterations = session.query(Iteration).all()
-    
+
     assert len(iterations) == 50

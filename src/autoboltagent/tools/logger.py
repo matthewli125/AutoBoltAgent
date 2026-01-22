@@ -1,13 +1,16 @@
-from sqlalchemy import create_engine
-
-from sqlalchemy.orm import declarative_base, Session, sessionmaker, Mapped, mapped_column
-from contextlib import contextmanager
-
+from datetime import datetime, timezone
 from pathlib import Path
 
-from datetime import datetime, timezone
+from sqlalchemy import create_engine
+from sqlalchemy.orm import (
+    declarative_base,
+    sessionmaker,
+    Mapped,
+    mapped_column,
+)
 
 Base = declarative_base()
+
 
 class Iteration(Base):
     __tablename__ = "iterations"
@@ -29,9 +32,10 @@ class Iteration(Base):
     llm_output: Mapped[str] = mapped_column(nullable=True)
     error_message: Mapped[str] = mapped_column(nullable=True)
 
+
 class AgentLogger:
     _instance = None
-    
+
     def connect_to_db(self, db_url: str):
         self.db_url = db_url
         self.engine = create_engine(db_url, future=True, pool_pre_ping=True)
@@ -43,7 +47,9 @@ class AgentLogger:
 
             Base.metadata.create_all(self.engine)
 
-            self.db_session = sessionmaker(bind=self.engine, expire_on_commit=False, future=True)
+            self.db_session = sessionmaker(
+                bind=self.engine, expire_on_commit=False, future=True
+            )
         except Exception as e:
             raise IOError("Failed to connect to DB, check if file in use", repr(e))
 
@@ -55,36 +61,32 @@ class AgentLogger:
             cls._instance.db_session = None
             cls._instance.connect_to_db(db_url)
         return cls._instance
-    
+
     @classmethod
     def reset(cls):
         if not cls._instance:
             return
-        
+
         inst = cls._instance
 
         if inst.engine:
             inst.engine.dispose()
-        
+
         if inst.db_url:
             for suffix in ("", "-wal", "-shm"):
                 file_path = Path(inst.db_url.replace("sqlite:///", "") + suffix)
                 file_path.unlink(missing_ok=True)
 
         cls._instance = None
-    
-    def log(
-            self, 
-            run_id, 
-            agent_id, 
-            target_fos,
-            action_step
-        ):
+
+    def log(self, run_id, agent_id, target_fos, action_step):
 
         iteration_no = action_step.step_number
-        start_dt = datetime.fromtimestamp(action_step.timing.start_time, tz=timezone.utc)
+        start_dt = datetime.fromtimestamp(
+            action_step.timing.start_time, tz=timezone.utc
+        )
         end_dt = datetime.fromtimestamp(action_step.timing.end_time, tz=timezone.utc)
-        
+
         error = getattr(action_step, "error", None)
         tool_calls = getattr(action_step, "tool_calls", None)
         observations = getattr(action_step, "observations", None)
@@ -111,7 +113,9 @@ class AgentLogger:
                         observations=observations,
                         target_fos=target_fos,
                         llm_output=llm_output,
-                        error_message=error.message if (error and error.message) else None
+                        error_message=(
+                            error.message if (error and error.message) else None
+                        ),
                     )
                 )
                 session.flush()
@@ -121,6 +125,3 @@ class AgentLogger:
             print("\n\n")
             print(e)
             print("\n\n")
-        
-
-            

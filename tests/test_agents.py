@@ -39,16 +39,14 @@ def test_low_fidelity_agent():
 
     # Create the LowFidelityAgent and run it
     agent = autoboltagent.LowFidelityAgent(
-        model=get_testing_model(), 
-        agent_id="low fidelity agent", 
-        run_id="test 1", 
+        model=get_testing_model(),
+        agent_id="low fidelity agent",
+        run_id="test 1",
         target_fos=3.0,
-        max_steps=5
+        max_steps=5,
     )
-    
-    response = agent.run(
-        autoboltagent.prompts.EXAMPLE_TASK_INSTRUCTIONS
-    )
+
+    response = agent.run(autoboltagent.prompts.EXAMPLE_TASK_INSTRUCTIONS)
 
     # Make sure the response exists
     assert response is not None

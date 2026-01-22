@@ -6,7 +6,6 @@ from .prompts import (
     DUAL_FIDELITY_COORDINATION,
 )
 from .tools import AnalyticalTool, FiniteElementTool
-
 from .tools.logger import AgentLogger
 
 
@@ -43,7 +42,15 @@ class LowFidelityAgent(smolagents.agents.ToolCallingAgent):
     It is designed to provide solutions based on simplified models and assumptions, making it suitable for quick estimates and preliminary designs.
     """
 
-    def __init__(self, model: smolagents.models.Model, agent_id: str, run_id: str, target_fos: float, agent_logger: AgentLogger|None = None, max_steps=20) -> None:
+    def __init__(
+        self,
+        model: smolagents.models.Model,
+        agent_id: str,
+        run_id: str,
+        target_fos: float,
+        agent_logger: AgentLogger | None = None,
+        max_steps=20,
+    ) -> None:
         """
         Initializes a LowFidelityAgent that uses an analytical tool.
 
@@ -64,18 +71,18 @@ class LowFidelityAgent(smolagents.agents.ToolCallingAgent):
             add_base_tools=False,
             model=model,
             instructions=BASE_INSTRUCTIONS + TOOL_USING_INSTRUCTION,
-            step_callbacks = callbacks,
+            step_callbacks=callbacks,
             verbosity_level=2,
-            max_steps=max_steps
+            max_steps=max_steps,
         )
 
     def log(self, step, agent):
-        if self.agent_logger and  step.__class__.__name__ == "ActionStep":
+        if self.agent_logger and step.__class__.__name__ == "ActionStep":
             self.agent_logger.log(
-                agent_id=self.agent_id, 
-                run_id=self.run_id, 
-                target_fos=self.target_fos, 
-                action_step=step
+                agent_id=self.agent_id,
+                run_id=self.run_id,
+                target_fos=self.target_fos,
+                action_step=step,
             )
 
 

@@ -1,6 +1,7 @@
+from typing import Union, cast
+
 import autobolt
 import smolagents
-from typing import Dict, Any, Union, cast
 
 from .inputs import INPUTS
 
@@ -17,7 +18,7 @@ class FiniteElementTool(smolagents.tools.Tool):
     description = "Calculates the factor of safety using finite element analysis."
 
     input_type = dict[str, dict[str, Union[str, type, bool]]]
-    inputs: input_type = cast(input_type,INPUTS)
+    inputs: input_type = cast(input_type, INPUTS)
 
     output_type = "number"
 
