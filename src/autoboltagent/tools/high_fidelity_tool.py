@@ -67,3 +67,79 @@ class FiniteElementTool(smolagents.tools.Tool):
             comparison = "within acceptable range"
 
         return f"The factor of safety for the assembly is {fos:.2f} ({comparison})."
+
+
+class VerboseFiniteElementTool(smolagents.tools.Tool):
+    """
+    A tool that calculates the factor of safety for a bolted connection using finite element analysis.
+
+    This tool leverages the autobolt library to perform finite element calculations and determine the factor of safety
+    for a bolted connection based on the provided parameters.
+    """
+
+    name = "fea_fos_calculation"
+    description = "Calculates the factor of safety using finite element analysis."
+
+    input_type = dict[str, dict[str, Union[str, type, bool]]]
+    inputs = {
+        "num_bolts": {
+            "type": "number",
+            "description": "Number of bolts used in the joint",
+        },
+        "bolt_diameter": {
+            "type": "number",
+            "description": "Diameter of the bolt in mm",
+        }
+    }
+
+    output_type = "object"
+
+    def __init__(self, joint_configuration: Dict[str, Any], tolerance: float = 0.1):
+        super().__init__()
+        self.tolerance = tolerance
+        self.desired_safety_factor = joint_configuration["desired_safety_factor"]
+        self.load = joint_configuration["load"]
+        self.preload = joint_configuration["preload"]
+        self.bolt_yield_strength = joint_configuration["bolt_yield_strength"]
+        self.bolt_elastic_modulus = joint_configuration["bolt_elastic_modulus"]
+        self.plate_thickness = joint_configuration["plate_thickness"]
+        self.plate_elastic_modulus = joint_configuration["plate_elastic_modulus"]
+        self.plate_yield_strength = joint_configuration["plate_yield_strength"]
+        self.pitch = joint_configuration["pitch"]
+
+    def forward(
+        self,
+        num_bolts: int,
+        bolt_diameter: float,
+    ) -> dict:
+
+        # Define dimensions of the plate
+        plate_width = 0.1  # [m]
+        plate_length = 0.2  # [m]
+
+        # Compute traction
+        traction = -self.load / (self.plate_thickness / 1000 * plate_length)
+
+        fos = autobolt.calculate_fos(
+            plate_thickness_m=self.plate_thickness / 1000,
+            num_holes=num_bolts,
+            elastic_modulus=self.plate_elastic_modulus * 10**9,
+            yield_strength=self.plate_yield_strength * 10**6,
+            traction_values=[(0, traction, 0)],
+            hole_radius_m=bolt_diameter / 2 / 1000,
+            plate_length_m=plate_length,
+            plate_width_m=plate_width,
+            edge_margin_m=plate_length / (2 * num_bolts),
+            hole_spacing_m=plate_length / num_bolts,
+            hole_offset_from_bottom_m=0.020,  # [m] vertical position of hole centers (Y from bottom edge)
+            plate_gap_mm=0.01,  # [mm] gap between the two plates
+            poissons_ratio=0.3,  # Poisson's ratio for steel
+        )
+
+        diff = fos - self.desired_safety_factor
+
+        return {
+            "ok": bool((abs(diff) < self.tolerance)),
+            "fos": float(fos),
+            "diff": float(diff),
+        }
